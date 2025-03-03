@@ -64,7 +64,7 @@ A complete authentication and user management system with role-based access cont
 1. Clone the repository:
    ```bash
    git clone https://github.com/aliahadmd/templates-ai.git
-   cd auth-system
+   cd templates-ai
    ```
 
 2. Install dependencies:
