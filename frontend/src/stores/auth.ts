@@ -10,6 +10,8 @@ interface User {
   firstName: string | null;
   lastName: string | null;
   isEmailVerified: boolean;
+  profilePicture?: string;
+  profilePictureKey?: string;
   role?: {
     id: string;
     name: string;

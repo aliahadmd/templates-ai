@@ -228,7 +228,10 @@ export const updateUserRole = asyncHandler(async (req: Request, res: Response) =
 // @route   PUT /api/users/profile
 // @access  Private
 export const updateProfile = asyncHandler(async (req: Request, res: Response) => {
-  const { firstName, lastName, email }: UpdateUserInput = req.body;
+  const { firstName, lastName, email, profilePicture, profilePictureKey }: UpdateUserInput & {
+    profilePicture?: string;
+    profilePictureKey?: string;
+  } = req.body;
   const userId = req.user!.id;
 
   // Check if email is already taken
@@ -248,13 +251,17 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
     data: {
       ...(firstName && { firstName }),
       ...(lastName && { lastName }),
-      ...(email && { email })
+      ...(email && { email }),
+      ...(profilePicture !== undefined && { profilePicture }),
+      ...(profilePictureKey !== undefined && { profilePictureKey })
     },
     select: {
       id: true,
       email: true,
       firstName: true,
       lastName: true,
+      profilePicture: true,
+      profilePictureKey: true,
       isEmailVerified: true,
       createdAt: true,
       updatedAt: true,

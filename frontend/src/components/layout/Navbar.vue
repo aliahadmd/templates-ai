@@ -62,7 +62,10 @@
                 aria-haspopup="true"
               >
                 <span class="sr-only">Open user menu</span>
-                <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                <div v-if="user?.profilePicture" class="h-8 w-8 rounded-full overflow-hidden">
+                  <img :src="user.profilePicture" alt="Profile" class="h-full w-full object-cover" />
+                </div>
+                <div v-else class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                   {{ userInitials }}
                 </div>
               </button>
@@ -217,7 +220,10 @@
       <div v-if="isAuthenticated" class="pt-4 pb-3 border-t border-border">
         <div class="flex items-center px-4">
           <div class="flex-shrink-0">
-            <div class="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+            <div v-if="user?.profilePicture" class="h-10 w-10 rounded-full overflow-hidden">
+              <img :src="user.profilePicture" alt="Profile" class="h-full w-full object-cover" />
+            </div>
+            <div v-else class="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
               {{ userInitials }}
             </div>
           </div>
@@ -248,28 +254,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import ThemeToggle from '../ui/ThemeToggle.vue';
 
+const router = useRouter();
 const authStore = useAuthStore();
+
+const isProfileMenuOpen = ref(false);
+const isMobileMenuOpen = ref(false);
+
+// Computed properties
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 const isAdmin = computed(() => authStore.isAdmin);
+const user = computed(() => authStore.user);
 const userName = computed(() => {
-  if (!authStore.user) return '';
-  return `${authStore.user.firstName || ''} ${authStore.user.lastName || ''}`.trim();
+  if (!user.value) return '';
+  return `${user.value.firstName || ''} ${user.value.lastName || ''}`.trim();
 });
-const userEmail = computed(() => authStore.user?.email || '');
+const userEmail = computed(() => user.value?.email || '');
 const userInitials = computed(() => {
-  if (!authStore.user) return '';
-  const firstName = authStore.user.firstName || '';
-  const lastName = authStore.user.lastName || '';
-  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  if (!user.value) return '';
+  
+  const firstName = user.value.firstName || '';
+  const lastName = user.value.lastName || '';
+  
+  return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
 });
-
-const isMobileMenuOpen = ref(false);
-const isProfileMenuOpen = ref(false);
 
 const logout = () => {
   authStore.logout();

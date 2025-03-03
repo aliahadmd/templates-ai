@@ -12,6 +12,15 @@
           </div>
           <div class="card-body">
             <form @submit.prevent="updateProfile" class="form-container">
+              <!-- Profile Picture Upload -->
+              <div class="mb-6">
+                <ProfilePicture
+                  v-model="profilePicture"
+                  @upload-success="handleProfilePictureSuccess"
+                  @upload-error="handleProfilePictureError"
+                />
+              </div>
+              
               <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 <div class="sm:col-span-3">
                   <Input
@@ -116,6 +125,7 @@ import { useAuthStore } from '../../stores/auth';
 import AppLayout from '../../components/layout/AppLayout.vue';
 import Input from '../../components/ui/Input.vue';
 import Button from '../../components/ui/Button.vue';
+import ProfilePicture from '../../components/user/ProfilePicture.vue';
 import { z } from 'zod';
 import axios from 'axios';
 
@@ -125,6 +135,7 @@ const authStore = useAuthStore();
 const firstName = ref('');
 const lastName = ref('');
 const email = ref('');
+const profilePicture = ref('');
 const errors = ref<Record<string, string>>({});
 const loading = computed(() => authStore.loading);
 const error = computed(() => authStore.error);
@@ -146,11 +157,25 @@ onMounted(async () => {
       firstName.value = authStore.user.firstName || '';
       lastName.value = authStore.user.lastName || '';
       email.value = authStore.user.email;
+      profilePicture.value = authStore.user.profilePicture || '';
     }
   } catch (error) {
     console.error('Error fetching user data:', error);
   }
 });
+
+// Profile picture handlers
+const handleProfilePictureSuccess = ({ url, key }: { url: string, key: string }) => {
+  profilePicture.value = url;
+  updateSuccess.value = true;
+  setTimeout(() => {
+    updateSuccess.value = false;
+  }, 3000);
+};
+
+const handleProfilePictureError = (errorMessage: string) => {
+  console.error('Profile picture error:', errorMessage);
+};
 
 // Profile update validation schema
 const profileSchema = z.object({
@@ -197,6 +222,9 @@ const updateProfile = async () => {
     }
     if (email.value !== authStore.user?.email) {
       userData.email = email.value;
+    }
+    if (profilePicture.value !== authStore.user?.profilePicture) {
+      userData.profilePicture = profilePicture.value;
     }
 
     if (Object.keys(userData).length > 0) {

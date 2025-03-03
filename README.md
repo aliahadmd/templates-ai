@@ -12,6 +12,7 @@ A complete authentication and user management system with role-based access cont
 
 - **User Management**
   - User profiles with update capabilities
+  - Profile picture upload and management
   - Admin user management interface
   - Role-based access control
 
@@ -181,6 +182,19 @@ The media upload system uses Cloudflare R2 (S3-compatible storage) with a direct
 ### CORS Configuration
 
 The system automatically configures CORS for the R2 bucket on server startup to allow direct uploads from the frontend.
+
+## Profile Picture Management
+
+The system includes a complete profile picture management solution:
+
+1. **User-friendly Interface**: Drag-and-drop or click-to-select interface for uploading profile pictures
+2. **Image Validation**: Validates file types and sizes before upload
+3. **Direct R2 Upload**: Uses the same presigned URL system as the media upload component
+4. **Fallback Display**: Shows user initials when no profile picture is available
+5. **Responsive Design**: Profile pictures are displayed appropriately across all device sizes
+6. **Integration**: Profile pictures appear in the navigation bar and profile page
+
+Profile pictures are stored in a dedicated "profile-pictures" folder in the R2 bucket and are automatically linked to user accounts in the database.
 
 ## License
 

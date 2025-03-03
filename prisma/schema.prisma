@@ -19,6 +19,8 @@ model User {
   password          String
   firstName         String?
   lastName          String?
+  profilePicture    String?
+  profilePictureKey String?
   isEmailVerified   Boolean   @default(false)
   verificationToken String?
   resetToken        String?

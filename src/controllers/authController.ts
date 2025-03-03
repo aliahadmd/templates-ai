@@ -391,6 +391,8 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
       firstName: user.firstName,
       lastName: user.lastName,
       isEmailVerified: user.isEmailVerified,
+      profilePicture: user.profilePicture,
+      profilePictureKey: user.profilePictureKey,
       role: {
         id: user.role.id,
         name: user.role.name
