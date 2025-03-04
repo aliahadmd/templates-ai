@@ -1,20 +1,22 @@
 {
   "version": 2,
-  "buildCommand": "npm run prisma:generate && npm run build",
-  "installCommand": "npm install",
-  "outputDirectory": "dist",
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["prisma/**/*"],
+        "buildCommand": "npm i --save-dev @types/express @types/jsonwebtoken @types/cors @types/morgan @types/cookie-parser @types/multer && npm run prisma:generate"
+      }
+    }
+  ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/dist/index.js"
+      "dest": "/src/index.ts"
     }
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "build": {
-    "env": {
-      "PRISMA_GENERATE_DATAPROXY": "true"
-    }
   }
 } 
