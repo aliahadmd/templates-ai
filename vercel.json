@@ -3,17 +3,13 @@
   "builds": [
     {
       "src": "src/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["prisma/**/*"],
-        "buildCommand": "npm i --save-dev @types/express @types/jsonwebtoken @types/cors @types/morgan @types/cookie-parser @types/multer && npm run prisma:generate"
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/src/index.ts"
+      "dest": "/dist/index.js"
     }
   ],
   "env": {
