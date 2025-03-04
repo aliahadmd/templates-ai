@@ -86,145 +86,129 @@
     </div>
     
     <!-- Create Role Modal -->
-    <div v-if="showCreateRoleModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Create New Role</h3>
-          <button @click="showCreateRoleModal = false" class="modal-close">&times;</button>
+    <Modal 
+      :isOpen="showCreateRoleModal" 
+      title="Create New Role" 
+      @close="showCreateRoleModal = false"
+    >
+      <form @submit.prevent="createRole">
+        <div class="mb-4">
+          <Input
+            v-model="createRoleForm.name"
+            label="Role Name"
+            placeholder="Enter role name"
+            required
+          />
         </div>
-        <div class="modal-body">
-          <form @submit.prevent="createRole">
-            <div class="mb-4">
-              <Input
-                v-model="createRoleForm.name"
-                label="Role Name"
-                placeholder="Enter role name"
-                required
-              />
-            </div>
-            <div class="mb-4">
-              <Input
-                v-model="createRoleForm.description"
-                label="Description"
-                placeholder="Enter role description"
-              />
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-              <Button @click="showCreateRoleModal = false" type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button type="submit" :loading="creating">
-                Create Role
-              </Button>
-            </div>
-          </form>
+        <div class="mb-4">
+          <Input
+            v-model="createRoleForm.description"
+            label="Description"
+            placeholder="Enter role description"
+          />
         </div>
-      </div>
-    </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <Button @click="showCreateRoleModal = false" type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button type="submit" :loading="creating">
+            Create Role
+          </Button>
+        </div>
+      </form>
+    </Modal>
     
     <!-- Edit Role Modal -->
-    <div v-if="showEditRoleModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Edit Role</h3>
-          <button @click="showEditRoleModal = false" class="modal-close">&times;</button>
+    <Modal 
+      :isOpen="showEditRoleModal" 
+      title="Edit Role" 
+      @close="showEditRoleModal = false"
+    >
+      <form @submit.prevent="updateRole">
+        <div class="mb-4">
+          <Input
+            v-model="editRoleForm.name"
+            label="Role Name"
+            placeholder="Enter role name"
+            required
+            :disabled="editRoleForm.name === 'admin' || editRoleForm.name === 'user'"
+          />
         </div>
-        <div class="modal-body">
-          <form @submit.prevent="updateRole">
-            <div class="mb-4">
-              <Input
-                v-model="editRoleForm.name"
-                label="Role Name"
-                placeholder="Enter role name"
-                required
-                :disabled="editRoleForm.name === 'admin' || editRoleForm.name === 'user'"
-              />
-            </div>
-            <div class="mb-4">
-              <Input
-                v-model="editRoleForm.description"
-                label="Description"
-                placeholder="Enter role description"
-              />
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-              <Button @click="showEditRoleModal = false" type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button type="submit" :loading="updating">
-                Update Role
-              </Button>
-            </div>
-          </form>
+        <div class="mb-4">
+          <Input
+            v-model="editRoleForm.description"
+            label="Description"
+            placeholder="Enter role description"
+          />
         </div>
-      </div>
-    </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <Button @click="showEditRoleModal = false" type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button type="submit" :loading="updating">
+            Update Role
+          </Button>
+        </div>
+      </form>
+    </Modal>
     
     <!-- Manage Permissions Modal -->
-    <div v-if="showManagePermissionsModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Manage Permissions for {{ selectedRole?.name }}</h3>
-          <button @click="showManagePermissionsModal = false" class="modal-close">&times;</button>
+    <Modal 
+      :isOpen="showManagePermissionsModal" 
+      :title="`Manage Permissions for ${selectedRole?.name}`" 
+      @close="showManagePermissionsModal = false"
+    >
+      <div v-if="loadingPermissions" class="flex justify-center py-4">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+      </div>
+      <div v-else>
+        <div class="mb-4">
+          <label class="form-label mb-2 block">Available Permissions</label>
+          <div class="max-h-60 overflow-y-auto border border-border rounded-md p-3">
+            <div v-for="permission in availablePermissions" :key="permission.id" class="mb-2">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  :value="permission.id" 
+                  v-model="selectedPermissions"
+                  class="form-checkbox"
+                />
+                <span>{{ permission.name }}</span>
+                <span class="text-xs text-muted-foreground ml-2">{{ permission.description }}</span>
+              </label>
+            </div>
+            <div v-if="availablePermissions.length === 0" class="text-muted-foreground italic">
+              No permissions available
+            </div>
+          </div>
         </div>
-        <div class="modal-body">
-          <div v-if="loadingPermissions" class="flex justify-center py-4">
-            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-          </div>
-          <div v-else>
-            <div class="mb-4">
-              <label class="form-label mb-2 block">Available Permissions</label>
-              <div class="max-h-60 overflow-y-auto border border-border rounded-md p-3">
-                <div v-for="permission in availablePermissions" :key="permission.id" class="mb-2">
-                  <label class="flex items-center space-x-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      :value="permission.id" 
-                      v-model="selectedPermissions"
-                      class="form-checkbox"
-                    />
-                    <span>{{ permission.name }}</span>
-                    <span class="text-xs text-muted-foreground ml-2">{{ permission.description }}</span>
-                  </label>
-                </div>
-                <div v-if="availablePermissions.length === 0" class="text-muted-foreground italic">
-                  No permissions available
-                </div>
-              </div>
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-              <Button @click="showManagePermissionsModal = false" type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button @click="savePermissions" :loading="savingPermissions">
-                Save Permissions
-              </Button>
-            </div>
-          </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <Button @click="showManagePermissionsModal = false" type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button @click="savePermissions" :loading="savingPermissions">
+            Save Permissions
+          </Button>
         </div>
       </div>
-    </div>
+    </Modal>
     
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Confirm Delete</h3>
-          <button @click="showDeleteModal = false" class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-          <p class="mb-4">Are you sure you want to delete this role? This action cannot be undone.</p>
-          <div class="flex justify-end gap-2 mt-6">
-            <Button @click="showDeleteModal = false" type="button" variant="outline">
-              Cancel
-            </Button>
-            <Button @click="deleteRole" variant="destructive" :loading="deleting">
-              Delete Role
-            </Button>
-          </div>
-        </div>
+    <Modal 
+      :isOpen="showDeleteModal" 
+      title="Confirm Delete" 
+      @close="showDeleteModal = false"
+    >
+      <p class="mb-4">Are you sure you want to delete this role? This action cannot be undone.</p>
+      <div class="flex justify-end gap-2 mt-6">
+        <Button @click="showDeleteModal = false" type="button" variant="outline">
+          Cancel
+        </Button>
+        <Button @click="deleteRole" variant="destructive" :loading="deleting">
+          Delete Role
+        </Button>
       </div>
-    </div>
+    </Modal>
   </AppLayout>
 </template>
 
@@ -235,6 +219,7 @@ import AppLayout from '../../components/layout/AppLayout.vue';
 import Button from '../../components/ui/Button.vue';
 import Input from '../../components/ui/Input.vue';
 import { useAuthStore } from '../../stores/auth';
+import Modal from '../../components/ui/Modal.vue';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const authStore = useAuthStore();
@@ -471,53 +456,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-}
-
-.modal-content {
-  background-color: var(--color-background);
-  border-radius: 0.5rem;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.modal-body {
-  padding: 1rem;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--color-muted-foreground);
-}
-
-.form-checkbox {
-  width: 1rem;
-  height: 1rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-background);
-  color: var(--color-primary);
-}
+/* Remove hardcoded styles - they're now in the global style.css */
 </style> 

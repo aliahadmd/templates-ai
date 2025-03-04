@@ -101,6 +101,36 @@
     @apply mt-1 text-sm text-destructive;
   }
   
+  /* Modal styles */
+  .modal-backdrop {
+    @apply fixed inset-0 bg-black/50 flex justify-center items-center z-50;
+  }
+  
+  .modal-content {
+    @apply bg-card rounded-lg w-full max-w-md shadow-lg;
+  }
+  
+  .modal-header {
+    @apply flex justify-between items-center p-4 border-b border-border;
+  }
+  
+  .modal-body {
+    @apply p-4;
+  }
+  
+  .modal-footer {
+    @apply p-4 border-t border-border bg-accent;
+  }
+  
+  .modal-close {
+    @apply bg-transparent border-none text-2xl cursor-pointer text-muted-foreground hover:text-foreground;
+  }
+  
+  /* Form checkbox */
+  .form-checkbox {
+    @apply w-4 h-4 rounded border border-border bg-background text-primary focus:ring-primary;
+  }
+  
   /* Page layout styles */
   .page-container {
     @apply py-6;

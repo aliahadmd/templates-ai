@@ -74,102 +74,90 @@
     </div>
     
     <!-- Create Permission Modal -->
-    <div v-if="showCreatePermissionModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Create New Permission</h3>
-          <button @click="showCreatePermissionModal = false" class="modal-close">&times;</button>
+    <Modal 
+      :isOpen="showCreatePermissionModal" 
+      title="Create New Permission" 
+      @close="showCreatePermissionModal = false"
+    >
+      <form @submit.prevent="createPermission">
+        <div class="mb-4">
+          <Input
+            v-model="createPermissionForm.name"
+            label="Permission Name"
+            placeholder="Enter permission name"
+            required
+          />
+          <p class="text-xs text-muted-foreground mt-1">
+            Use a descriptive name like "create:users" or "delete:roles"
+          </p>
         </div>
-        <div class="modal-body">
-          <form @submit.prevent="createPermission">
-            <div class="mb-4">
-              <Input
-                v-model="createPermissionForm.name"
-                label="Permission Name"
-                placeholder="Enter permission name"
-                required
-              />
-              <p class="text-xs text-muted-foreground mt-1">
-                Use a descriptive name like "create:users" or "delete:roles"
-              </p>
-            </div>
-            <div class="mb-4">
-              <Input
-                v-model="createPermissionForm.description"
-                label="Description"
-                placeholder="Enter permission description"
-              />
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-              <Button @click="showCreatePermissionModal = false" type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button type="submit" :loading="creating">
-                Create Permission
-              </Button>
-            </div>
-          </form>
+        <div class="mb-4">
+          <Input
+            v-model="createPermissionForm.description"
+            label="Description"
+            placeholder="Enter permission description"
+          />
         </div>
-      </div>
-    </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <Button @click="showCreatePermissionModal = false" type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button type="submit" :loading="creating">
+            Create Permission
+          </Button>
+        </div>
+      </form>
+    </Modal>
     
     <!-- Edit Permission Modal -->
-    <div v-if="showEditPermissionModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Edit Permission</h3>
-          <button @click="showEditPermissionModal = false" class="modal-close">&times;</button>
+    <Modal 
+      :isOpen="showEditPermissionModal" 
+      title="Edit Permission" 
+      @close="showEditPermissionModal = false"
+    >
+      <form @submit.prevent="updatePermission">
+        <div class="mb-4">
+          <Input
+            v-model="editPermissionForm.name"
+            label="Permission Name"
+            placeholder="Enter permission name"
+            required
+          />
         </div>
-        <div class="modal-body">
-          <form @submit.prevent="updatePermission">
-            <div class="mb-4">
-              <Input
-                v-model="editPermissionForm.name"
-                label="Permission Name"
-                placeholder="Enter permission name"
-                required
-              />
-            </div>
-            <div class="mb-4">
-              <Input
-                v-model="editPermissionForm.description"
-                label="Description"
-                placeholder="Enter permission description"
-              />
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-              <Button @click="showEditPermissionModal = false" type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button type="submit" :loading="updating">
-                Update Permission
-              </Button>
-            </div>
-          </form>
+        <div class="mb-4">
+          <Input
+            v-model="editPermissionForm.description"
+            label="Description"
+            placeholder="Enter permission description"
+          />
         </div>
-      </div>
-    </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <Button @click="showEditPermissionModal = false" type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button type="submit" :loading="updating">
+            Update Permission
+          </Button>
+        </div>
+      </form>
+    </Modal>
     
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Confirm Delete</h3>
-          <button @click="showDeleteModal = false" class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-          <p class="mb-4">Are you sure you want to delete this permission? This action cannot be undone and may affect roles that use this permission.</p>
-          <div class="flex justify-end gap-2 mt-6">
-            <Button @click="showDeleteModal = false" type="button" variant="outline">
-              Cancel
-            </Button>
-            <Button @click="deletePermission" variant="destructive" :loading="deleting">
-              Delete Permission
-            </Button>
-          </div>
-        </div>
+    <Modal 
+      :isOpen="showDeleteModal" 
+      title="Confirm Delete" 
+      @close="showDeleteModal = false"
+    >
+      <p class="mb-4">Are you sure you want to delete this permission? This action cannot be undone and may affect roles that use this permission.</p>
+      <div class="flex justify-end gap-2 mt-6">
+        <Button @click="showDeleteModal = false" type="button" variant="outline">
+          Cancel
+        </Button>
+        <Button @click="deletePermission" variant="destructive" :loading="deleting">
+          Delete Permission
+        </Button>
       </div>
-    </div>
+    </Modal>
   </AppLayout>
 </template>
 
@@ -180,6 +168,7 @@ import AppLayout from '../../components/layout/AppLayout.vue';
 import Button from '../../components/ui/Button.vue';
 import Input from '../../components/ui/Input.vue';
 import { useAuthStore } from '../../stores/auth';
+import Modal from '../../components/ui/Modal.vue';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const authStore = useAuthStore();
@@ -320,44 +309,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-}
-
-.modal-content {
-  background-color: var(--color-background);
-  border-radius: 0.5rem;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.modal-body {
-  padding: 1rem;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--color-muted-foreground);
-}
+/* Remove hardcoded styles - they're now in the global style.css */
 </style> 

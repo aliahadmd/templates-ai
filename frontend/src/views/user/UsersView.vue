@@ -104,104 +104,92 @@
     </div>
     
     <!-- Edit User Modal -->
-    <div v-if="showEditUserModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Edit User</h3>
-          <button @click="showEditUserModal = false" class="modal-close">&times;</button>
+    <Modal 
+      :isOpen="showEditUserModal" 
+      title="Edit User" 
+      @close="showEditUserModal = false"
+    >
+      <form @submit.prevent="updateUser">
+        <div class="mb-4">
+          <Input
+            v-model="editUserForm.firstName"
+            label="First Name"
+            placeholder="Enter first name"
+          />
         </div>
-        <div class="modal-body">
-          <form @submit.prevent="updateUser">
-            <div class="mb-4">
-              <Input
-                v-model="editUserForm.firstName"
-                label="First Name"
-                placeholder="Enter first name"
-              />
-            </div>
-            <div class="mb-4">
-              <Input
-                v-model="editUserForm.lastName"
-                label="Last Name"
-                placeholder="Enter last name"
-              />
-            </div>
-            <div class="mb-4">
-              <Input
-                v-model="editUserForm.email"
-                label="Email"
-                type="email"
-                placeholder="Enter email"
-                required
-              />
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-              <Button @click="showEditUserModal = false" type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button type="submit" :loading="updating">
-                Update User
-              </Button>
-            </div>
-          </form>
+        <div class="mb-4">
+          <Input
+            v-model="editUserForm.lastName"
+            label="Last Name"
+            placeholder="Enter last name"
+          />
         </div>
-      </div>
-    </div>
+        <div class="mb-4">
+          <Input
+            v-model="editUserForm.email"
+            label="Email"
+            type="email"
+            placeholder="Enter email"
+            required
+          />
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <Button @click="showEditUserModal = false" type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button type="submit" :loading="updating">
+            Update User
+          </Button>
+        </div>
+      </form>
+    </Modal>
     
     <!-- Edit Role Modal -->
-    <div v-if="showEditRoleModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Change User Role</h3>
-          <button @click="showEditRoleModal = false" class="modal-close">&times;</button>
+    <Modal 
+      :isOpen="showEditRoleModal" 
+      title="Change User Role" 
+      @close="showEditRoleModal = false"
+    >
+      <form @submit.prevent="updateUserRole">
+        <div class="mb-4">
+          <label class="form-label">Select Role</label>
+          <select 
+            v-model="selectedRoleId" 
+            class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
+            required
+          >
+            <option v-for="role in roles" :key="role.id" :value="role.id">
+              {{ role.name }}
+            </option>
+          </select>
         </div>
-        <div class="modal-body">
-          <form @submit.prevent="updateUserRole">
-            <div class="mb-4">
-              <label class="form-label">Select Role</label>
-              <select 
-                v-model="selectedRoleId" 
-                class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
-                required
-              >
-                <option v-for="role in roles" :key="role.id" :value="role.id">
-                  {{ role.name }}
-                </option>
-              </select>
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-              <Button @click="showEditRoleModal = false" type="button" variant="outline">
-                Cancel
-              </Button>
-              <Button type="submit" :loading="updating">
-                Update Role
-              </Button>
-            </div>
-          </form>
+        <div class="flex justify-end gap-2 mt-6">
+          <Button @click="showEditRoleModal = false" type="button" variant="outline">
+            Cancel
+          </Button>
+          <Button type="submit" :loading="updating">
+            Update Role
+          </Button>
         </div>
-      </div>
-    </div>
+      </form>
+    </Modal>
     
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-backdrop">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-medium">Confirm Delete</h3>
-          <button @click="showDeleteModal = false" class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-          <p class="mb-4">Are you sure you want to delete this user? This action cannot be undone.</p>
-          <div class="flex justify-end gap-2 mt-6">
-            <Button @click="showDeleteModal = false" type="button" variant="outline">
-              Cancel
-            </Button>
-            <Button @click="deleteUser" variant="destructive" :loading="deleting">
-              Delete User
-            </Button>
-          </div>
-        </div>
+    <Modal 
+      :isOpen="showDeleteModal" 
+      title="Confirm Delete" 
+      @close="showDeleteModal = false"
+    >
+      <p class="mb-4">Are you sure you want to delete this user? This action cannot be undone.</p>
+      <div class="flex justify-end gap-2 mt-6">
+        <Button @click="showDeleteModal = false" type="button" variant="outline">
+          Cancel
+        </Button>
+        <Button @click="deleteUser" variant="destructive" :loading="deleting">
+          Delete User
+        </Button>
       </div>
-    </div>
+    </Modal>
   </AppLayout>
 </template>
 
@@ -211,6 +199,7 @@ import axios from 'axios';
 import AppLayout from '../../components/layout/AppLayout.vue';
 import Button from '../../components/ui/Button.vue';
 import Input from '../../components/ui/Input.vue';
+import Modal from '../../components/ui/Modal.vue';
 import { useAuthStore } from '../../stores/auth';
 
 const API_URL = import.meta.env.VITE_API_URL;

@@ -196,6 +196,27 @@ The system includes a complete profile picture management solution:
 
 Profile pictures are stored in a dedicated "profile-pictures" folder in the R2 bucket and are automatically linked to user accounts in the database.
 
+## UI Components and Styling
+
+The application uses a consistent UI approach with reusable components and styling:
+
+### Styling Approach
+
+- **Tailwind CSS**: The primary styling tool, providing utility classes for rapid development
+- **Global CSS Variables**: Theme colors and design tokens defined in CSS variables for easy theming
+- **Component Classes**: Reusable component classes defined in `style.css` using Tailwind's `@apply` directive
+- **Dark/Light Mode**: Full support for both dark and light themes
+
+### Key UI Components
+
+- **Modal**: Reusable modal component with customizable header, body, and footer
+- **Button**: Flexible button component with various styles and states
+- **Input**: Form input component with validation support
+- **Card**: Container component with header, body, and footer sections
+- **Layout**: Consistent page layout with responsive design
+
+This approach ensures a consistent look and feel across the application while maintaining flexibility and reusability.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details. 
