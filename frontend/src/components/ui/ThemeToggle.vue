@@ -185,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useThemeStore } from '../../stores/theme';
 
 const themeStore = useThemeStore();
@@ -211,18 +211,10 @@ const currentThemeTitle = computed(() => {
   return `${theme.value.charAt(0).toUpperCase() + theme.value.slice(1)} theme`;
 });
 
-// Initialize theme on component mount
-onMounted(() => {
-  themeStore.init();
-  
-  // Close dropdown when clicking outside
-  document.addEventListener('click', handleClickOutside);
-});
+// Initialize theme and add event listener
+themeStore.init();
 
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
-
+// Close dropdown when clicking outside
 function handleClickOutside(event: MouseEvent) {
   const target = event.target as HTMLElement;
   if (!target.closest('.relative')) {
@@ -230,9 +222,13 @@ function handleClickOutside(event: MouseEvent) {
   }
 }
 
-function toggleTheme() {
-  themeStore.toggleTheme();
-}
+// Add event listener when component is mounted
+document.addEventListener('click', handleClickOutside);
+
+// Remove event listener when component is unmounted
+window.addEventListener('beforeunload', () => {
+  document.removeEventListener('click', handleClickOutside);
+});
 
 function setTheme(newTheme: 'light' | 'dark' | 'system') {
   themeStore.setTheme(newTheme);

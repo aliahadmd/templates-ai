@@ -165,7 +165,7 @@ onMounted(async () => {
 });
 
 // Profile picture handlers
-const handleProfilePictureSuccess = ({ url, key }: { url: string, key: string }) => {
+const handleProfilePictureSuccess = ({ url }: { url: string, key: string }) => {
   profilePicture.value = url;
   updateSuccess.value = true;
   setTimeout(() => {
@@ -229,7 +229,7 @@ const updateProfile = async () => {
 
     if (Object.keys(userData).length > 0) {
       // Use axios with proper error handling
-      const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/profile`, userData, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/users/profile`, userData, {
         headers: {
           Authorization: `Bearer ${authStore.token}`
         }

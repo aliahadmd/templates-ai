@@ -130,16 +130,27 @@ const handleFileChange = async (event: Event) => {
     // Upload file to R2
     const { fileUrl, key } = await uploadFile(file, 'profile-pictures');
     
-    // Update profile picture in user profile
-    await updateUserProfile(fileUrl, key);
-    
-    // Update local state
-    profileImageUrl.value = fileUrl;
-    profileImageKey.value = key;
-    
-    // Emit events
-    emit('update:modelValue', fileUrl);
-    emit('upload-success', { url: fileUrl, key });
+    try {
+      // Update profile picture in user profile
+      await updateUserProfile({ profilePicture: fileUrl, profilePictureKey: key });
+      
+      // Update local state
+      profileImageUrl.value = fileUrl;
+      profileImageKey.value = key;
+      
+      // Emit events
+      emit('update:modelValue', fileUrl);
+      emit('upload-success', { url: fileUrl, key });
+    } catch (profileErr: any) {
+      // If updating profile fails, try to delete the uploaded file
+      console.error('Error updating profile, cleaning up uploaded file:', profileErr);
+      try {
+        await deleteFile(key);
+      } catch (deleteErr) {
+        console.error('Error cleaning up file after profile update failure:', deleteErr);
+      }
+      throw profileErr; // Re-throw the original error
+    }
     
     // Reset file input
     if (fileInput.value) {
@@ -147,7 +158,7 @@ const handleFileChange = async (event: Event) => {
     }
   } catch (err: any) {
     console.error('Profile picture upload error:', err);
-    error.value = err.message || 'Failed to upload profile picture';
+    error.value = err.response?.data?.message || err.message || 'Failed to upload profile picture';
     emit('upload-error', error.value);
   } finally {
     isUploading.value = false;
@@ -155,11 +166,11 @@ const handleFileChange = async (event: Event) => {
 };
 
 // Update user profile with new profile picture
-const updateUserProfile = async (fileUrl: string, key: string) => {
+const updateUserProfile = async (profileData: { profilePicture: string, profilePictureKey: string }) => {
   try {
     const response = await axios.put(
       `${import.meta.env.VITE_API_URL}/api/users/profile`,
-      { profilePicture: fileUrl, profilePictureKey: key },
+      profileData,
       {
         headers: {
           Authorization: `Bearer ${authStore.token}`
@@ -179,23 +190,24 @@ const updateUserProfile = async (fileUrl: string, key: string) => {
 
 // Remove profile picture
 const removeProfilePicture = async () => {
-  if (!profileImageKey.value && !authStore.user?.profilePictureKey) {
-    return;
-  }
-  
   try {
     isUploading.value = true;
     error.value = '';
     
     const keyToDelete = profileImageKey.value || authStore.user?.profilePictureKey;
     
-    if (keyToDelete) {
-      // Delete file from R2
-      await deleteFile(keyToDelete);
-    }
+    // Update profile to remove profile picture first
+    await updateUserProfile({ profilePicture: '', profilePictureKey: '' });
     
-    // Update profile to remove profile picture
-    await updateUserProfile('', '');
+    // Then delete the file from R2 if we have a key
+    if (keyToDelete) {
+      try {
+        await deleteFile(keyToDelete);
+      } catch (deleteErr) {
+        console.error('Error deleting file from storage, but profile was updated:', deleteErr);
+        // Continue even if file deletion fails, as the profile was updated
+      }
+    }
     
     // Update local state
     profileImageUrl.value = '';

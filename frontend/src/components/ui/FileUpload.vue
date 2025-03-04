@@ -85,13 +85,10 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import axios from 'axios';
 import Button from './Button.vue';
-import { useAuthStore } from '../../stores/auth';
 import { uploadFile } from '../../utils/uploadService';
 
-const API_URL = import.meta.env.VITE_API_URL;
-const authStore = useAuthStore();
+
 
 const props = defineProps({
   accept: {
@@ -167,12 +164,12 @@ const triggerFileInput = () => {
   }
 };
 
-const handleDragOver = (e: DragEvent) => {
+const handleDragOver = (_e: DragEvent) => {
   if (props.disabled) return;
   isDragging.value = true;
 };
 
-const handleDragLeave = (e: DragEvent) => {
+const handleDragLeave = (_e: DragEvent) => {
   isDragging.value = false;
 };
 

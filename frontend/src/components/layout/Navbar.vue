@@ -254,12 +254,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import ThemeToggle from '../ui/ThemeToggle.vue';
 
-const router = useRouter();
+
 const authStore = useAuthStore();
 
 const isProfileMenuOpen = ref(false);

@@ -73,8 +73,8 @@ export const updateUserSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters').optional(),
   lastName: z.string().min(2, 'Last name must be at least 2 characters').optional(),
   email: z.string().email('Invalid email address').optional(),
-  profilePicture: z.string().url('Profile picture must be a valid URL').optional().nullable(),
-  profilePictureKey: z.string().optional().nullable()
+  profilePicture: z.string().url('Profile picture must be a valid URL').or(z.literal('')).optional().nullable(),
+  profilePictureKey: z.string().or(z.literal('')).optional().nullable()
 });
 
 export const changePasswordSchema = z.object({
