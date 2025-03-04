@@ -62,8 +62,8 @@ export declare const updateUserSchema: z.ZodObject<{
     firstName: z.ZodOptional<z.ZodString>;
     lastName: z.ZodOptional<z.ZodString>;
     email: z.ZodOptional<z.ZodString>;
-    profilePicture: z.ZodNullable<z.ZodOptional<z.ZodString>>;
-    profilePictureKey: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+    profilePicture: z.ZodNullable<z.ZodOptional<z.ZodUnion<[z.ZodString, z.ZodLiteral<"">]>>>;
+    profilePictureKey: z.ZodNullable<z.ZodOptional<z.ZodUnion<[z.ZodString, z.ZodLiteral<"">]>>>;
 }, "strip", z.ZodTypeAny, {
     email?: string | undefined;
     firstName?: string | undefined;

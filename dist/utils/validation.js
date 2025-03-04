@@ -59,8 +59,8 @@ exports.updateUserSchema = zod_1.z.object({
     firstName: zod_1.z.string().min(2, 'First name must be at least 2 characters').optional(),
     lastName: zod_1.z.string().min(2, 'Last name must be at least 2 characters').optional(),
     email: zod_1.z.string().email('Invalid email address').optional(),
-    profilePicture: zod_1.z.string().url('Profile picture must be a valid URL').optional().nullable(),
-    profilePictureKey: zod_1.z.string().optional().nullable()
+    profilePicture: zod_1.z.string().url('Profile picture must be a valid URL').or(zod_1.z.literal('')).optional().nullable(),
+    profilePictureKey: zod_1.z.string().or(zod_1.z.literal('')).optional().nullable()
 });
 exports.changePasswordSchema = zod_1.z.object({
     currentPassword: zod_1.z.string().min(1, 'Current password is required'),
